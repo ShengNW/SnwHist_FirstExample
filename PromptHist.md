@@ -1,0 +1,1 @@
+1. 你好。对话历史存放在$HOME/SnwHist中，请阅读index.md找到与本次对话相关的交接文件。请参考$HOME/SnwHist/Interface.md为本次会话新建SnwHist信息生命体的独立仓库，建好后推到git@github.com:ShengNW/SnwHist_FirstExample.git，并更新$HOME/SnwHist的index.md和相关git子仓库关联，最后以PR形式提交到git@github.com:ShengNW/SnwHist.git（注意，git相关操作都用ssh，是配好的）
