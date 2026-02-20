@@ -10,3 +10,6 @@
 - `PromptHist.md`：用户 prompt 记录（只记录用户 prompt）。
 - `Interface.md`：所有读取/写入智能体必须遵守的接口规则。
 - `index.md`：子目录（子模块）索引与元信息。
+
+本地 Skills（仅在本目录会话可用）：
+- `.agents/skills/push-firstexample-submodule/SKILL.md`：FirstExample 推送流程技能（先推本仓库，再更新父仓库子模块指针）。

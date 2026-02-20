@@ -1,0 +1,4 @@
+interface:
+  display_name: "Push FirstExample Submodule"
+  short_description: "Push FirstExample and update parent submodule pointer"
+  default_prompt: "Push FirstExample to SnwHist_FirstExample via SSH, then update and push parent submodule pointer"
