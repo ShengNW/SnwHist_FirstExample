@@ -4,3 +4,4 @@
 snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 /home/snw/SnwHist/FirstExample'''这个空md中，方便后续新开codex少走弯路，同时也辅以github或typora可渲染的mermaid图帮助理解
 4. 把你这次推送的经验总结成skill，让本仓库(FirstExample)的推送都能方便地调用，注意这个skill只要在本目录开的codex可用就行了
+5. push-firstexample-submodule
