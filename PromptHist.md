@@ -9,3 +9,9 @@ snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 /home/snw/SnwHist/FirstExample'''中，不仅有github/typro可渲染的mermaid图，对用户行为，运营操作等都要详尽说明，但同时保持逻辑语义简洁，面面俱到且不能啰嗦，要给人清晰且完整的感觉
 7. push-firstexample-submodule
+8. 关于运营文档我已经有一版了'''-rw-rw-r--  1 snw snw 10420  2月 16 23:26 README.md
+snw@snw-Inspiron-3458:~/SNWcode/Replicant/Role/ENFP/roles/女友/0011_router运营探查$ pwd
+/home/snw/SNWcode/Replicant/Role/ENFP/roles/女友/0011_router运营探查'''但是我非常不满意，这简直不是人读的，现在你也有用户视角了，请站在人类可理解的运营使用角度去串讲现在'''https://router.yeying.pub/'''这个网站的运营操作，注意要用'root'和'lel0uch&CC'这个账号密码登录才能看见运营配置，一定要把运营当作纯小白,写到'''RuOperation.md
+snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
+/home/snw/SnwHist/FirstExample'''这个里面，注意辅助以github/typro可渲染的mermaid图帮助理解，一定要有主线并且有重点，按常用等顺序去讲解，就像这个router的产品说明书那样，一定要有核心主线而不是功能的堆砌，从运营平日的工作，为获客所做的工作、配置、查看数据、理解等各个角度生动地说明清楚
+9. push-firstexample-submodule
