@@ -50,3 +50,53 @@ snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 '''Prompt B（新国内 Win，第一段）：准备 Win -> VPS 隧道密钥与 sshd 基础'''这个prompt有问题，国内prompt是给wsl的，但wsl可以通过cmd.exe 或powershell.exe去用win本机，因为codex是安装在wsl上的，请修改
 
 14. push-firstexample-submodule
+'''Prompt A（Dell，可选但推荐）：生成登录新 Win 的管理员密钥'''还有'''Prompt D（新国内 Win，第二段）：写入管理员公钥 + 建立开机自启反向隧道'''让我很疑惑，首先你现在就在dell上，为什么还要设计prompt，你直接做不就行了吗？另外为什么要新生成sshkey，那样管理起来不是很麻烦？最后我都跟你说过了，你是可以通过 $surface-admin-connect 连到surface的，并且我现在搭建的新win的tunnel的vps跟之前搭建surface的是同一个，所以你肯定知道所有关于连vps的信息，这两个prompt让本来很简单的问题复杂无比，你自己到ssh目录看一下，学一下那个技能的相关细节信息不是能省去很多时间浪费？
+
+<skill>
+<name>surface-admin-connect</name>
+<path>/home/snw/.codex-ru/skills/surface-admin-connect/SKILL.md</path>
+---
+name: surface-admin-connect
+description: Connect to Surface Book 2 Administrator over the VPS reverse tunnel using the existing shell functions `w` (PowerShell) and `q` (SSH). Use when Codex must quickly verify tunnel health, open a remote admin session, inspect `~/.bashrc` tunnel config, or troubleshoot why `w` resolves to Linux `w` instead of the SSH function.
+---
+
+# Surface Admin Connect
+
+Run this workflow in order to avoid false negatives from non-interactive shells.
+
+## Quick Workflow
+
+1. Verify that `~/.bashrc` defines the tunnel helpers and keys:
+   - `bash -ic 'type w; type q'`
+   - `bash -ic "rg -n \"VPS_HOST|KEY_SURFACE_ADMIN|KEY_VPS_TUNNEL|PROXY_CMD|^w\\(\\)|^q\\(\\)\" ~/.bashrc"`
+
+2. Run a short health probe:
+   - `scripts/check_surface_tunnel.sh 12`
+   - Treat seeing `PS C:\Users\administrator>` as success, even if timeout later returns 124.
+
+3. Open an interactive admin PowerShell session:
+   - `scripts/open_surface_powershell.sh`
+   - Requires a TTY-capable executor.
+   - Exit with `exit`.
+
+4. If probe fails, open `references/troubleshooting.md` and apply the matching fix.
+
+## Important Behavior
+
+- Do not call plain `w` from non-interactive shells.
+  - Non-interactive shells can bypass `.bashrc` function loading and invoke Linux `/usr/bin/w`.
+  - Always run through `bash -ic 'w'` or the provided scripts.
+
+- Prefer `w` for Administrator PowerShell and `q` for raw SSH shell.
+
+- Keep strict host keys enabled (`StrictHostKeyChecking=accept-new`) unless explicitly debugging host key issues.
+
+## Resources
+
+- `scripts/check_surface_tunnel.sh`: non-destructive tunnel probe with timeout and prompt detection.
+- `scripts/open_surface_powershell.sh`: open interactive PowerShell on Surface as Administrator.
+- `references/troubleshooting.md`: common failure signatures and fixes.
+
+</skill>
+
+15. push-firstexample-submodule

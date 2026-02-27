@@ -44,7 +44,8 @@ flowchart LR
 - `TUNNEL_PORT`：`2224`（避开已用 `2222/2223`）
 - `WIN_TUNNEL_KEY`：`C:\ProgramData\ssh\id_ed25519_tunnel_cnwin`
 - `WIN_KNOWN_HOSTS`：`C:\ProgramData\ssh\known_hosts_tunnel_cnwin`
-- `DELL_ADMIN_KEY`：`~/.ssh/id_ed25519_cnwin_admin`
+- `DELL_ADMIN_KEY`：`~/.ssh/id_ed25519_surface_admin`（默认复用现有，不新建）
+- `DELL_ADMIN_PUB`：`~/.ssh/id_ed25519_surface_admin.pub`
 - `VPS_PROXY_KEY_ON_DELL`：你在 Dell 上已经能登录 VPS 的那把 key（例如已有 tunnel/surface 用的）
 
 ---
@@ -52,24 +53,26 @@ flowchart LR
 ## 3) Prompt 套装（按顺序执行）
 
 > 你可以直接复制每个 `text` 代码块到对应机器的新 Codex 会话里执行。
+> 说明：A/C/E 可在当前 Dell 与 VPS 侧完成；B/D 必须在“新Win的WSL Codex”执行，因为隧道建立前 Dell 还无法直达该机。
 
-### Prompt A（Dell，可选但推荐）：生成登录新 Win 的管理员密钥
+### Prompt A（Dell，必做）：复用现有管理员公钥（不新建 key）
 
 ```text
-你在 Dell Linux 机器。目标：生成“Dell -> 新Win Administrator”专用登录密钥，不改其他配置。
+你在 Dell Linux 机器。目标：复用现有 key，把公钥导出给新Win使用，不新建任何 key。
 
 请执行：
-1) 若 ~/.ssh/id_ed25519_cnwin_admin 不存在：
-   ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_cnwin_admin -N '' -C 'dell-to-cnwin-admin'
-2) chmod 600 ~/.ssh/id_ed25519_cnwin_admin
-3) 输出公钥全文（单行），并用下面格式包裹：
+1) 检查以下文件必须存在：
+   - ~/.ssh/id_ed25519_surface_admin
+   - ~/.ssh/id_ed25519_surface_admin.pub
+2) 输出公钥全文（单行），并用下面格式包裹：
    BEGIN_PUB_ADMIN_FROM_DELL
    <公钥单行>
    END_PUB_ADMIN_FROM_DELL
-4) 不要改 ~/.ssh/config，不要连接外部机器。
+3) 输出指纹：ssh-keygen -lf ~/.ssh/id_ed25519_surface_admin.pub
+4) 不要新建 key，不要改 ~/.ssh/config，不要连接外部机器。
 
 最后只输出：
-- KEY_PATH
+- KEY_PATH(复用)
 - PUB_FINGERPRINT
 - BEGIN/END 包裹的公钥
 ```
@@ -182,7 +185,7 @@ E. 输出摘要
 ### Prompt D（新国内 Win，第二段）：写入管理员公钥 + 建立开机自启反向隧道
 
 > 先准备两个输入：
-> - `PUB_ADMIN_FROM_DELL`（来自 Prompt A）
+> - `PUB_ADMIN_FROM_DELL`（来自 Prompt A，默认是 `id_ed25519_surface_admin.pub`）
 > - `VPS_HOST`（你的 VPS）
 
 ```text
@@ -256,13 +259,13 @@ D) 输出摘要
 - VPS_PROXY_USER = <你在Dell上可登录VPS用于ProxyCommand的用户>
 - VPS_PROXY_KEY = <你在Dell上可用的VPS私钥路径>
 - TUNNEL_PORT = 2224
-- DELL_ADMIN_KEY = ~/.ssh/id_ed25519_cnwin_admin
+- DELL_ADMIN_KEY = ~/.ssh/id_ed25519_surface_admin
 
 请执行：
 1) 先检查 VPS 回环端口是否已监听：
    ssh -i "$VPS_PROXY_KEY" -p 443 "$VPS_PROXY_USER@$VPS_HOST" "ss -ltn | grep '127.0.0.1:2224' || true"
 2) 若监听存在，执行登录测试：
-   ssh -i ~/.ssh/id_ed25519_cnwin_admin \
+   ssh -i "$DELL_ADMIN_KEY" \
      -o StrictHostKeyChecking=accept-new \
      -o "ProxyCommand=ssh -i $VPS_PROXY_KEY -p 443 $VPS_PROXY_USER@$VPS_HOST 'nc 127.0.0.1 2224'" \
      Administrator@localhost "hostname"
@@ -271,7 +274,7 @@ D) 输出摘要
      HostName localhost
      User Administrator
      Port 22
-     IdentityFile ~/.ssh/id_ed25519_cnwin_admin
+     IdentityFile ~/.ssh/id_ed25519_surface_admin
      StrictHostKeyChecking accept-new
      ProxyCommand ssh -i <VPS_PROXY_KEY> -p 443 <VPS_PROXY_USER>@<VPS_HOST> 'nc 127.0.0.1 2224'
 
