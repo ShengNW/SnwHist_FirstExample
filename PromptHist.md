@@ -47,3 +47,6 @@ snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 /home/snw/SnwHist/FirstExample'''中，用github/typro可渲染的mermaid图帮助理解，保证vps上新开的tunnel不会影响正在运行的tunnel以及其他端口的公网服务（比如pg 网站 v2ray rustdesk都在这个vps上），以及win上能顺利连上反向隧道，同时开机自启。注意，你可能不止给一个prompt，因为还有ssh密钥的交互等相关问题，总之新开codex和新手小白在看了之后都知道怎么起，同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。
 
 13. push-firstexample-submodule
+'''Prompt B（新国内 Win，第一段）：准备 Win -> VPS 隧道密钥与 sshd 基础'''这个prompt有问题，国内prompt是给wsl的，但wsl可以通过cmd.exe 或powershell.exe去用win本机，因为codex是安装在wsl上的，请修改
+
+14. push-firstexample-submodule

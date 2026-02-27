@@ -76,32 +76,35 @@ flowchart LR
 
 ---
 
-### Prompt B（新国内 Win，第一段）：准备 Win -> VPS 隧道密钥与 sshd 基础
+### Prompt B（新国内 Win，第一段）：WSL 里跑 Codex，通过 PowerShell 操作 Win 本机
 
 ```text
-你在“新国内 Windows 主机”的管理员 PowerShell。目标：只做本机准备，不改 VPS。
+你在“新国内 Windows 主机的 WSL 终端”里跑 Codex。目标：只做 Win 本机准备，不改 VPS。
 
 必须满足：
+- Codex 当前在 WSL；所有 Windows 改动必须通过 `powershell.exe` 或 `cmd.exe` 执行。
 - 目标是 Windows sshd，不是 WSL sshd。
 - 任何写文件先备份（若文件已存在）。
 - 输出可读摘要。
 
 请执行：
-1) 确保 OpenSSH Client/Server 可用；若缺失则安装：
+1) 在 WSL 里先生成临时脚本 `/tmp/cnwin_stage1.ps1`，再用下面方式调用：
+   - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"$(wslpath -w /tmp/cnwin_stage1.ps1)\"`
+2) 脚本中确保 OpenSSH Client/Server 可用；若缺失则安装：
    - Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
    - Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-2) 启动并设置 sshd 开机自启：
+3) 启动并设置 sshd 开机自启：
    - Set-Service sshd -StartupType Automatic
    - Start-Service sshd
-3) 生成隧道私钥（无口令）：
+4) 生成隧道私钥（无口令）：
    - 路径 C:\ProgramData\ssh\id_ed25519_tunnel_cnwin
    - 若已存在，先备份到 *.bak_时间戳 再重建
-4) 修复私钥 ACL（仅 SYSTEM + Administrators 可读写）
-5) 输出公钥单行并包裹：
+5) 修复私钥 ACL（仅 SYSTEM + Administrators 可读写）
+6) 输出公钥单行并包裹：
    BEGIN_PUB_TUNNEL_CNWIN
    <公钥单行>
    END_PUB_TUNNEL_CNWIN
-6) 测试出站 443 连通性（Test-NetConnection <VPS_HOST> -Port 443），这里只输出结果不做网络改动。
+7) 测试出站 443 连通性（Test-NetConnection <VPS_HOST> -Port 443），这里只输出结果不做网络改动。
 
 最后只输出：
 - SSHD_STATUS
@@ -183,7 +186,7 @@ E. 输出摘要
 > - `VPS_HOST`（你的 VPS）
 
 ```text
-你在“新国内 Windows 主机”的管理员 PowerShell。目标：
+你在“新国内 Windows 主机的 WSL 终端”里跑 Codex，并通过 `powershell.exe` 操作管理员上下文。目标：
 1) 让 Dell 可通过密钥登录本机 Administrator（Windows sshd）。
 2) 开机自动拉起 Win -> VPS 的 2224 反向隧道。
 
