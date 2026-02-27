@@ -40,3 +40,10 @@ snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
 /home/snw/SnwHist/FirstExample'''中，注意要辅助以github/typroa可渲染的mermaid图，要极致用心打造精品文档，生动且概念、逻辑详细，操作指导事无巨细，引人入胜，让我一个建筑领域的小白也能津津有味读下去且清晰执行
 11. push-firstexample-submodule
 12. push-firstexample-submodule
+请访问`https://github.com/ShengNW/Codex_VPS/tree/main/Tunnel`还有`https://github.com/ShengNW/Codex_SB2/blob/main/Tunnel/Tunnel.md`，它们分别存放了我vps机器和surface机器建立反向隧道的过程，你现在是在dell上，我是从surface连的你，你也可以通过调用技能回连surface，这非常好。现在我在国内新租了一台win机子，也在上面安装了codex并且现在已经管理员启动了，我想实现的就是从你现在所处的dell上也能通过vps连到那台新的国内win机器的adminislator(注意不是wsl的ssh)，前人的经验非常丰富了，请直接给我vps上还有新开的国内win机器的codex的prompt，写到'''VPS.md
+snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
+/home/snw/SnwHist/FirstExample'''中，用github/typro可渲染的mermaid图帮助理解，保证vps上新开的tunnel不会影响正在运行的tunnel以及其他端口的公网服务（比如pg 网站 v2ray rustdesk都在这个vps上），以及win上能顺利连上反向隧道，同时开机自启。注意，你可能不止给一个prompt，因为还有ssh密钥的交互等相关问题，总之新开codex和新手小白在看了之后都知道怎么起，同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。请访问`https://github.com/ShengNW/Codex_VPS/tree/main/Tunnel`还有`https://github.com/ShengNW/Codex_SB2/blob/main/Tunnel/Tunnel.md`，它们分别存放了我vps机器和surface机器建立反向隧道的过程，你现在是在dell上，我是从surface连的你，你也可以通过调用技能回连surface，这非常好。现在我在国内新租了一台win机子，也在上面安装了codex并且现在已经管理员启动了，我想实现的就是从你现在所处的dell上也能通过vps连到那台新的国内win机器的adminislator(注意不是wsl的ssh)，前人的经验非常丰富了，请直接给我vps上还有新开的国内win机器的codex的prompt，写到'''VPS.md
+snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
+/home/snw/SnwHist/FirstExample'''中，用github/typro可渲染的mermaid图帮助理解，保证vps上新开的tunnel不会影响正在运行的tunnel以及其他端口的公网服务（比如pg 网站 v2ray rustdesk都在这个vps上），以及win上能顺利连上反向隧道，同时开机自启。注意，你可能不止给一个prompt，因为还有ssh密钥的交互等相关问题，总之新开codex和新手小白在看了之后都知道怎么起，同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。
+
+13. push-firstexample-submodule
