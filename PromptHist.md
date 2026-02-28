@@ -100,3 +100,176 @@ Run this workflow in order to avoid false negatives from non-interactive shells.
 </skill>
 
 15. push-firstexample-submodule
+我都说了你现在就在dell上，请直接把promptA
+请直接把目前的VPS.md 连 $surface-admin-connect 之后复制到'''F:\CODE\social\JianZhi\Env\Env_Web\Ev_002_tunnel'''这个目录下，然后直接在上面把这个公钥部分写成真实的，另外`<你的域名或IP>`等也改成真实的'''51.75.133.235 (ubuntu)'''，注意那个ubuntu的意思是要ubuntu用户登录，前面的数字是IP
+
+<skill>
+<name>surface-admin-connect</name>
+<path>/home/snw/.codex-ru/skills/surface-admin-connect/SKILL.md</path>
+---
+name: surface-admin-connect
+description: Connect to Surface Book 2 Administrator over the VPS reverse tunnel using the existing shell functions `w` (PowerShell) and `q` (SSH). Use when Codex must quickly verify tunnel health, open a remote admin session, inspect `~/.bashrc` tunnel config, or troubleshoot why `w` resolves to Linux `w` instead of the SSH function.
+---
+
+# Surface Admin Connect
+
+Run this workflow in order to avoid false negatives from non-interactive shells.
+
+## Quick Workflow
+
+1. Verify that `~/.bashrc` defines the tunnel helpers and keys:
+   - `bash -ic 'type w; type q'`
+   - `bash -ic "rg -n \"VPS_HOST|KEY_SURFACE_ADMIN|KEY_VPS_TUNNEL|PROXY_CMD|^w\\(\\)|^q\\(\\)\" ~/.bashrc"`
+
+2. Run a short health probe:
+   - `scripts/check_surface_tunnel.sh 12`
+   - Treat seeing `PS C:\Users\administrator>` as success, even if timeout later returns 124.
+
+3. Open an interactive admin PowerShell session:
+   - `scripts/open_surface_powershell.sh`
+   - Requires a TTY-capable executor.
+   - Exit with `exit`.
+
+4. If probe fails, open `references/troubleshooting.md` and apply the matching fix.
+
+## Important Behavior
+
+- Do not call plain `w` from non-interactive shells.
+  - Non-interactive shells can bypass `.bashrc` function loading and invoke Linux `/usr/bin/w`.
+  - Always run through `bash -ic 'w'` or the provided scripts.
+
+- Prefer `w` for Administrator PowerShell and `q` for raw SSH shell.
+
+- Keep strict host keys enabled (`StrictHostKeyChecking=accept-new`) unless explicitly debugging host key issues.
+
+## Resources
+
+- `scripts/check_surface_tunnel.sh`: non-destructive tunnel probe with timeout and prompt detection.
+- `scripts/open_surface_powershell.sh`: open interactive PowerShell on Surface as Administrator.
+- `references/troubleshooting.md`: common failure signatures and fixes.
+
+</skill>
+promptB返回为''' SSHD_STATUS=Running (Auto)
+  TUNNEL_KEY_PATH=C:\ProgramData\ssh\id_ed25519_tunnel_cnwin
+  TUNNEL_PUB_FINGERPRINT=SHA256:T9fxRe5yacEglutmxd2bwz36JWUFkKMEnMz6H1KMbKE
+  OUTBOUND_443_TEST=True
+  BEGIN_PUB_TUNNEL_CNWIN
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDGXbKref8b9/I/iWyw6vl11URWNuwn2lby/v77Xp91 administrator@22H2-HNDJT2412
+  END_PUB_TUNNEL_CNWIN''',请还是连 $surface-admin-connect 改相应VPS.md中相关prompt替换为真实内容，注意改之前备份一下
+
+<skill>
+<name>surface-admin-connect</name>
+<path>/home/snw/.codex-ru/skills/surface-admin-connect/SKILL.md</path>
+---
+name: surface-admin-connect
+description: Connect to Surface Book 2 Administrator over the VPS reverse tunnel using the existing shell functions `w` (PowerShell) and `q` (SSH). Use when Codex must quickly verify tunnel health, open a remote admin session, inspect `~/.bashrc` tunnel config, or troubleshoot why `w` resolves to Linux `w` instead of the SSH function.
+---
+
+# Surface Admin Connect
+
+Run this workflow in order to avoid false negatives from non-interactive shells.
+
+## Quick Workflow
+
+1. Verify that `~/.bashrc` defines the tunnel helpers and keys:
+   - `bash -ic 'type w; type q'`
+   - `bash -ic "rg -n \"VPS_HOST|KEY_SURFACE_ADMIN|KEY_VPS_TUNNEL|PROXY_CMD|^w\\(\\)|^q\\(\\)\" ~/.bashrc"`
+
+2. Run a short health probe:
+   - `scripts/check_surface_tunnel.sh 12`
+   - Treat seeing `PS C:\Users\administrator>` as success, even if timeout later returns 124.
+
+3. Open an interactive admin PowerShell session:
+   - `scripts/open_surface_powershell.sh`
+   - Requires a TTY-capable executor.
+   - Exit with `exit`.
+
+4. If probe fails, open `references/troubleshooting.md` and apply the matching fix.
+
+## Important Behavior
+
+- Do not call plain `w` from non-interactive shells.
+  - Non-interactive shells can bypass `.bashrc` function loading and invoke Linux `/usr/bin/w`.
+  - Always run through `bash -ic 'w'` or the provided scripts.
+
+- Prefer `w` for Administrator PowerShell and `q` for raw SSH shell.
+
+- Keep strict host keys enabled (`StrictHostKeyChecking=accept-new`) unless explicitly debugging host key issues.
+
+## Resources
+
+- `scripts/check_surface_tunnel.sh`: non-destructive tunnel probe with timeout and prompt detection.
+- `scripts/open_surface_powershell.sh`: open interactive PowerShell on Surface as Administrator.
+- `references/troubleshooting.md`: common failure signatures and fixes.
+
+</skill>
+vps执行返回为'''已完成变更与验证，未触碰 nginx/postgresql/v2ray/rustdesk/防火墙。sshd -t 与 systemctl reload 均成功。
+
+  摘要
+
+  - USER_CREATED_OR_EXISTING: CREATED
+  - DROPIN_PATH: /etc/ssh/sshd_config.d/03-tunnel-cnwin.conf
+  - AUTH_KEYS_LINE_COUNT: 1
+  - TUNNEL_PORT_POLICY: PermitListen 127.0.0.1:2224; GatewayPorts no; AllowTcpForwarding remote
+
+  Before Port Snapshot
+
+  LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*
+  LISTEN 0      511          0.0.0.0:80         0.0.0.0:*
+  LISTEN 0      4096       127.0.0.1:8000       0.0.0.0:*
+  LISTEN 0      4096         0.0.0.0:443        0.0.0.0:*
+  LISTEN 0      128        127.0.0.1:2223       0.0.0.0:*
+  LISTEN 0      128        127.0.0.1:2222       0.0.0.0:*
+  LISTEN 0      4096         0.0.0.0:5432       0.0.0.0:*
+  LISTEN 0      4096            [::]:22            [::]:*
+  LISTEN 0      511             [::]:80            [::]:*
+  LISTEN 0      4096            [::]:443           [::]:*
+  LISTEN 0      4096            [::]:5432          [::]:*
+
+  After Port Snapshot
+
+  LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*
+  LISTEN 0      511          0.0.0.0:80         0.0.0.0:*
+  LISTEN 0      4096       127.0.0.1:8000       0.0.0.0:*
+  LISTEN 0      4096         0.0.0.0:443        0.0.0.0:*
+  LISTEN 0      128        127.0.0.1:2223       0.0.0.0:*
+  LISTEN 0      128        127.0.0.1:2222       0.0.0.0:*
+  LISTEN 0      4096         0.0.0.0:5432       0.0.0.0:*
+  LISTEN 0      4096            [::]:22            [::]:*
+  LISTEN 0      511             [::]:80            [::]:*
+  LISTEN 0      4096            [::]:443           [::]:*
+  LISTEN 0      4096            [::]:5432          [::]:*
+
+  Diff 摘要（drop-in）
+
+  --- /dev/null
+  +++ /etc/ssh/sshd_config.d/03-tunnel-cnwin.conf
+  @@ -0,0 +1,8 @@
+  +Match User tunnel_cnwin
+  +    AllowTcpForwarding remote
+  +    PermitListen 127.0.0.1:2224
+  +    GatewayPorts no
+  +    X11Forwarding no
+  +    AllowAgentForwarding no
+  +    PermitTTY no
+  +    AllowStreamLocalForwarding no
+
+  如需提供 Windows 端的 ssh -R 隧道命令模板或加入 KeepAlive/自动重连参数，我可以补上。''',win执行返回为'''SSHD_STATUS=Running
+  ADMIN_KEYS_LINE_COUNT=1
+  TASK_EXISTS=True
+  TASK_LAST_RUN_RESULT=267009
+  TUNNEL_PROCESS_CMDLINE=''',接下来你可跑“Prompt E（Dell）”了吧？毕竟你就在dell上
+最新winwslcodex返回为'''命令 1 输出（已产生输出后停止进程以继续执行命令 2）...Host key verification failed.'''
+没看到
+cnwin_login_check 最后 20 行 ... LOGIN_OK ...
+cnwin_forward_check 最后 20 行 ... FORWARD_OK ...
+已常驻
+执行codex返回为'''LOGIN_OK
+  TUNNEL_PID=22760
+  TUNNEL_ALIVE=True
+  VPS_2224_LINE=LISTEN 0      128        127.0.0.1:2224       0.0.0.0:*'''
+非常好，现在已经成功了，请事无巨细地把你成功的经验，踩过的坑以及如何解决的等都站在教师指挥官角度统筹全局安排分析教我理解，用github/typro可渲染的mermaid图帮助理解，写到'''OpenClaw.md
+snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd
+/home/snw/SnwHist/FirstExample'''中，特别是你如何通过配置v2rayN解决网络问题的，要保证新开codex或者新手小白看了你写的文档后也能按部就班起起来（所以代码等要完备，注意不是给脚本，就是powershell或cmd或wsl可以执行的命令），同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。既要主次分明有具体如何执行，也要有相应概念原理架构等的解释说明，我再强调一遍是全流程，全部经验、所有有效具体的相关代码甚至包括排错等都要明明白白写清楚
+
+16. push-firstexample-submodule

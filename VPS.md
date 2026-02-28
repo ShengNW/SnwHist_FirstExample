@@ -39,7 +39,7 @@ flowchart LR
 
 ## 2) 变量卡（先统一，不然后面会乱）
 
-- `VPS_HOST`：你的 VPS 域名/IP（示例：`vps-47db6a55.vps.ovh.net`）
+- `VPS_HOST`：`51.75.133.235`（Dell 侧登录用户为 `ubuntu`）
 - `TUNNEL_USER`：`tunnel_cnwin`
 - `TUNNEL_PORT`：`2224`（避开已用 `2222/2223`）
 - `WIN_TUNNEL_KEY`：`C:\ProgramData\ssh\id_ed25519_tunnel_cnwin`
@@ -66,7 +66,7 @@ flowchart LR
    - ~/.ssh/id_ed25519_surface_admin.pub
 2) 输出公钥全文（单行），并用下面格式包裹：
    BEGIN_PUB_ADMIN_FROM_DELL
-   <公钥单行>
+   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHfMtxHuzkx0GTCU0m9zirLgl5ojD1TtlDBVkQHflYH0 dell->surface-admin
    END_PUB_ADMIN_FROM_DELL
 3) 输出指纹：ssh-keygen -lf ~/.ssh/id_ed25519_surface_admin.pub
 4) 不要新建 key，不要改 ~/.ssh/config，不要连接外部机器。
@@ -105,9 +105,9 @@ flowchart LR
 5) 修复私钥 ACL（仅 SYSTEM + Administrators 可读写）
 6) 输出公钥单行并包裹：
    BEGIN_PUB_TUNNEL_CNWIN
-   <公钥单行>
+   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDGXbKref8b9/I/iWyw6vl11URWNuwn2lby/v77Xp91 administrator@22H2-HNDJT2412
    END_PUB_TUNNEL_CNWIN
-7) 测试出站 443 连通性（Test-NetConnection <VPS_HOST> -Port 443），这里只输出结果不做网络改动。
+7) 测试出站 443 连通性（Test-NetConnection 51.75.133.235 -Port 443），这里只输出结果不做网络改动。
 
 最后只输出：
 - SSHD_STATUS
@@ -127,10 +127,10 @@ flowchart LR
 你在 VPS Linux。目标：新增一个“新Win专用反向隧道”，不影响现有 2222/2223 和 pg/v2ray/rustdesk/web。
 
 输入变量：
-- VPS_HOST = <你的域名或IP>
+- VPS_HOST = 51.75.133.235
 - TUNNEL_USER = tunnel_cnwin
 - TUNNEL_PORT = 2224
-- PUB_TUNNEL_CNWIN = <粘贴单行公钥>
+- PUB_TUNNEL_CNWIN = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDGXbKref8b9/I/iWyw6vl11URWNuwn2lby/v77Xp91 administrator@22H2-HNDJT2412
 
 硬约束：
 1) 绝不修改 nginx、postgresql、v2ray、rustdesk 配置。
@@ -186,7 +186,7 @@ E. 输出摘要
 
 > 先准备两个输入：
 > - `PUB_ADMIN_FROM_DELL`（来自 Prompt A，默认是 `id_ed25519_surface_admin.pub`）
-> - `VPS_HOST`（你的 VPS）
+> - `VPS_HOST`（固定：`51.75.133.235`）
 
 ```text
 你在“新国内 Windows 主机的 WSL 终端”里跑 Codex，并通过 `powershell.exe` 操作管理员上下文。目标：
@@ -194,12 +194,12 @@ E. 输出摘要
 2) 开机自动拉起 Win -> VPS 的 2224 反向隧道。
 
 输入变量：
-- VPS_HOST = <你的VPS域名或IP>
+- VPS_HOST = 51.75.133.235
 - TUNNEL_USER = tunnel_cnwin
 - TUNNEL_PORT = 2224
 - WIN_TUNNEL_KEY = C:\ProgramData\ssh\id_ed25519_tunnel_cnwin
 - WIN_KNOWN_HOSTS = C:\ProgramData\ssh\known_hosts_tunnel_cnwin
-- PUB_ADMIN_FROM_DELL = <粘贴 Dell 管理公钥单行>
+- PUB_ADMIN_FROM_DELL = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHfMtxHuzkx0GTCU0m9zirLgl5ojD1TtlDBVkQHflYH0 dell->surface-admin
 
 硬约束：
 - 修改前备份 administrators_authorized_keys。
@@ -228,7 +228,7 @@ B) 反向隧道启动脚本
      -o StrictHostKeyChecking=accept-new
      -o UserKnownHostsFile="C:\ProgramData\ssh\known_hosts_tunnel_cnwin"
      -R 127.0.0.1:2224:127.0.0.1:22
-     tunnel_cnwin@<VPS_HOST>
+     tunnel_cnwin@51.75.133.235
 
 C) 开机自启计划任务
 1. 任务名：Tunnel_CNWIN_2224
@@ -255,9 +255,9 @@ D) 输出摘要
 你在 Dell Linux。目标：通过 VPS 中转，SSH 到新国内 Windows 的 Administrator。
 
 输入变量：
-- VPS_HOST = <你的VPS域名或IP>
-- VPS_PROXY_USER = <你在Dell上可登录VPS用于ProxyCommand的用户>
-- VPS_PROXY_KEY = <你在Dell上可用的VPS私钥路径>
+- VPS_HOST = 51.75.133.235
+- VPS_PROXY_USER = ubuntu
+- VPS_PROXY_KEY = ~/.ssh/id_ed25519_vps_tunnel
 - TUNNEL_PORT = 2224
 - DELL_ADMIN_KEY = ~/.ssh/id_ed25519_surface_admin
 
@@ -276,7 +276,7 @@ D) 输出摘要
      Port 22
      IdentityFile ~/.ssh/id_ed25519_surface_admin
      StrictHostKeyChecking accept-new
-     ProxyCommand ssh -i <VPS_PROXY_KEY> -p 443 <VPS_PROXY_USER>@<VPS_HOST> 'nc 127.0.0.1 2224'
+     ProxyCommand ssh -i ~/.ssh/id_ed25519_vps_tunnel -p 443 ubuntu@51.75.133.235 'nc 127.0.0.1 2224'
 
 最后输出：
 - VPS_LOOPBACK_2224
