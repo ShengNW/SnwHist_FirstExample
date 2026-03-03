@@ -281,3 +281,5 @@ win执行codex返回为'''以下为你要求的完整证据与最终结构化结
 请把这次成功启用outlook网页的完整经验写入'Outlook.md\n snw@snw-Inspiron-3458:~/SnwHist/FirstExample$ pwd\n /home/snw/SnwHist/FirstExample'中注意要图文并茂（同时也要主次分明，既有相应代码让新开codx或小白也能轻松操作，也要有概念原理、结构、操作/避坑指南、使用说明等东西），辅以github/typroa可渲染的mermaid图帮助理解，同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。
 
 19. push-firstexample-submodule
+
+20. push-firstexample-submodule
