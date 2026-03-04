@@ -283,3 +283,10 @@ win执行codex返回为'''以下为你要求的完整证据与最终结构化结
 19. push-firstexample-submodule
 
 20. push-firstexample-submodule
+先专注于跨境电商这个场景吧，请站在教师指挥官的角度，统筹全局安排分析，教我理解，帮我写需求描述，包括上下文、经验
+、开发的绝对路径、目录、脚本等，让新开codex或新手小白只看你的文档也能快速上手理解、开始按部就班地操作，所以要事无巨
+细、写到`/home/snw/SnwHist/FirstExample/OpenClaw_000_need.md`中，用github/typro可渲染的mermaid图帮助理解，同时要生动
+引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。既要主次分明有具体如何执行，也要有相应概念原理架构等的
+解释说明，记住主线是需求描述，然后辅以具体的实现方案，而且仅做电商场景
+
+21. push-firstexample-submodule
