@@ -301,3 +301,6 @@ ex都能按部就班部署起来
 23. push-firstexample-submodule
 
 24. push-firstexample-submodule
+非常好，请把这次错误现象、排错、解决等的全部经验事无巨细写到'/home/snw/SnwHist/FirstExample/win_000_chrome.md'中，注意站在教师指挥官的角度，统筹全局安排分析，教我理解包括上下文、经验、开发的绝对路径、目录、脚本等，让新开codex或新手小白只看你的文档也能快速上手理解、开始按部就班地操作，所以要事无巨细，用github/typro可渲染的mermaid图帮助理解，同时要生动引人入胜，极致的用心打造精美的作品，让我愿意津津有味地读下去。既要主次分明有具体如何执行，也要有相应概念原理架构等的解释说明，
+
+25. push-firstexample-submodule
