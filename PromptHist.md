@@ -323,3 +323,54 @@ ex都能按部就班部署起来
 27. push-firstexample-submodule
 
 28. push-firstexample-submodule
+请站在教师指挥官的角度，统筹全局安排分析，教我理解。
+
+  任务主题：环境与数据准备以及退线
+  目标产物：写到 `/home/snw/SnwHist/FirstExample/Env_000_pre.md`
+
+  请按“新开 Codex / 新手小白也能一步步复现”的标准来写，要求：
+  1) 主次分明：先给战报结论，再给执行路线，再讲原理。
+  2) 全流程覆盖：从 '''  - 已创建项目根目录与分层结构：D:\Code\Env\Ev_001_work                                                                   
+  - 关键资料已复制并归档（含重命名防乱码）：                                                                              
+      - D:\Code\Env\Ev_001_work\01_raw\planning_doc\site_conditions_02015.doc                                             
+      - D:\Code\Env\Ev_001_work\01_raw\dwg\site_20180709.dwg                                                              
+      - D:\Code\Env\Ev_001_work\01_raw\heritage\...                                                                       
+      - D:\Code\Env\Ev_001_work\01_raw\photos\...                                                                         
+      - D:\Code\Env\Ev_001_work\06_report\refs\Env.md                                                                     
+      - D:\Code\Env\Ev_001_work\06_report\mermaid\...                                                                     
+  - 数据集已下载：                                                                                                        
+      - OSM（山东）D:\Code\Env\Ev_001_work\01_raw\district_osm\shandong-latest.osm.pbf                                    
+      - 校验文件 D:\Code\Env\Ev_001_work\01_raw\district_osm\shandong-latest.osm.pbf.md5
+      - 校验结果 D:\Code\Env\Ev_001_work\01_raw\district_osm\checksum_verified.txt（已匹配）
+  - EPW 气象包已就位并解压：
+      - D:\Code\Env\Ev_001_work\01_raw\climate_epw\Yantai_547630_TMYx\CHN_SD_Yantai.547630_TMYx.epw
+      - D:\Code\Env\Ev_001_work\01_raw\climate_epw\Qingdao_548570_TMYx\CHN_SD_Qingdao.Intl.AP.548570_TMYx.epw
+  - 清单与运行文档已生成：
+      - 总结 D:\Code\Env\Ev_001_work\00_admin\docs\remote_setup_summary.md
+      - 目录快照 D:\Code\Env\Ev_001_work\00_admin\docs\tree_snapshot.txt
+      - 文件清单 D:\Code\Env\Ev_001_work\00_admin\manifests\file_inventory.csv
+      - 原始数据哈希 D:\Code\Env\Ev_001_work\00_admin\manifests\raw_sha256.csv
+      - 下载脚本 D:\Code\Env\Ev_001_work\07_repro\data_download\download_osm_geofabrik.ps1
+      - 下载脚本 D:\Code\Env\Ev_001_work\07_repro\data_download\download_epw_onebuilding.ps1
+      - 下一步 runbook D:\Code\Env\Ev_001_work\07_repro\runbooks\next_steps_rhino_gh.md''' 到 ''' - Ladybug/Honeybee 全套已装并验收通过（Python+pip+Grasshopper 目录已落地）。
+  - 结果与步骤已写入：D:\exe\Snw_rhino\logs\Rhino8_Install_Status_20260303.md:1
+  - 验收日志：D:\exe\Snw_rhino\logs\verify-rhino-env_20260303.txt:1
+  - 复检脚本：D:\exe\Snw_rhino\scripts\verify-rhino-env.ps1:1 
+  - Octopus 补装脚本：D:\exe\Snw_rhino\scripts\install-octopus-from-package.ps1:1
+  - Octopus 辅助文件已放到：D:\exe\Snw_rhino\downloads\plugins\octopus:1'''还有'''已完成，Octopus 已安装成功。                                                                                            
+                                                                                                                          
+  - 安装源包：D:\exe\Snw_rhino\downloads\plugins\octopus\octopus04.zip                                                    
+  - 已写入 GH 库（并已解除阻止）：                                                                                        
+      - C:\Users\Administrator\AppData\Roaming\Grasshopper\Libraries\Octopus.gha                                          
+      - C:\Users\Administrator\AppData\Roaming\Grasshopper\Libraries\encog-octopus.dll                                    
+      - C:\Users\Administrator\AppData\Roaming\Grasshopper\Libraries\sharpNeatLib-octopus.dll                             
+      - C:\Users\Administrator\AppData\Roaming\Grasshopper\Libraries\HelixToolkit.Wpf.dll                                 
+  - 安装日志：D:\exe\Snw_rhino\logs\install-octopus_20260303.txt:1
+  - 完成说明：D:\exe\Snw_rhino\logs\Octopus_Install_Success_20260303.md:1'''，中间每一步都给可执行命令（PowerShell/CMD/WSL/给人的键鼠操作软件UI教程）。包括中间的退化怎么点的（给人的导入、使用软件及导出教程）
+  3) 内容完整：包括上下文、绝对路径（以及从Env开始的相对路径，因为我最终应该会交付整个Env目录）、目录结构、脚本/命令、参数说明、验收标准、回滚方案。甚至包括数据在哪个网站下、命令是什么等
+  4) 排错可落地：把踩坑与解决方法写成“现象-根因-处理-验证”。
+  5) 架构可理解：用 GitHub/Typora 可渲染的 Mermaid 图（至少：总架构图 + 执行流程图 + 故障分流图）。
+  6) 风格要求：生动引人入胜，极致用心打造精美作品，让人愿意津津有味读下去。
+  7) 解释深度：既有“怎么做”，也有“为什么这样做”（概念/原理/架构）。
+
+29. push-firstexample-submodule
