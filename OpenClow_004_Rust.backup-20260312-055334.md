@@ -92,55 +92,6 @@
 
 > 结论：你要的 Rust 方案不是“从零猜”，而是已有成熟机制可复刻。
 
-## 1.4 `chat` 登录页/钱包体验细节（补充映射，Rust实现）
-
-你提到的“只参考登录和钱包相关部分”，这里明确补齐：
-
-### A) 一进网页必须先完成钱包授权
-
-- 参考实现：
-  - `app/hooks/useAuth.ts`
-  - `app/components/auth.tsx`
-- 关键行为：
-  - 未授权时阻止进入主页面（登录门禁）。
-  - 监听 `UCAN_AUTH_EVENT` 与 `storage` 变化，实时刷新授权状态。
-
-### B) 首次连接后账户显示/历史账户选择
-
-- 参考实现：
-  - `app/components/auth.tsx`
-- 关键行为：
-  - 保存并展示历史账户列表（本地缓存，去重，限制条数）。
-  - 支持从历史账户中选择“期望账户”后发起连接。
-  - 登录后在顶部区域显示当前账户（短地址展示 + 全地址 tooltip）。
-
-### C) 账户复制与身份可见性
-
-- 参考实现（UI交互层面）：
-  - `auth.tsx` 的账户展示逻辑 + 现有 Chat 常用 copy 交互模式
-- Rust 落地要求：
-  - 账户展示组件必须内置复制按钮（复制完整地址）。
-  - 复制成功/失败需要 toast 反馈。
-  - 兼容移动端点击复制。
-
-### D) 钱包过期与自动重连提示
-
-- 参考实现：
-  - `app/plugins/wallet.ts`（`isValidUcanAuthorization`、过期与 issuer/caps 校验）
-  - `app/plugins/ucan-session.ts`（session 缓存与刷新）
-- 关键行为：
-  - Root 过期、issuer 不匹配、caps 不匹配时清理本地授权状态。
-  - 自动切回登录态，并提示“需要重新连接钱包授权”。
-  - 登录页保留上次账户记录，用户可一键重连。
-
-### E) 登录页视觉识别（含 Logo）
-
-- 参考实现：
-  - `app/components/auth.tsx` 中 `Logo` 顶部展示逻辑
-- Rust 落地要求：
-  - 保留“品牌 Logo + 登录主按钮 + 钱包状态”三段式布局。
-  - 保证移动端与桌面端视觉一致性，不弱化入口辨识度。
-
 ---
 
 ## 2. 产品目标与非目标（防止跑偏）
@@ -150,7 +101,7 @@
 1. 一键部署控制平面。
 2. 网页钱包登录 + UCAN 一次鉴权。
 3. 页面配置并启动 WhatsApp / 钉钉机器人。
-4. 统一 Router 配置（默认 `gpt-5.3-codex`，但可按策略改成其他模型）。
+4. 统一 Router 配置（默认 `gpt-5.3-codex`）。
 5. 多机器人实例并行，互不影响。
 
 ## 2.2 非目标（本阶段）
@@ -272,33 +223,6 @@ sequenceDiagram
 - 自动附加 UCAN Bearer。
 - 处理 token 缓存、过期刷新、失败重试。
 
-## 5.2 登录门禁与过期重连状态机（对齐 `chat`，Rust实现）
-
-```mermaid
-stateDiagram-v2
-  [*] --> Unauthenticated
-  Unauthenticated --> WalletConnecting: 点击连接钱包
-  WalletConnecting --> UcanAuthorizing: 已获取账户
-  UcanAuthorizing --> Authorized: Root/Session校验通过
-  UcanAuthorizing --> Unauthenticated: 用户拒绝/签名失败
-
-  Authorized --> ExpiringSoon: exp 临近阈值
-  ExpiringSoon --> Authorized: 后台刷新成功
-  ExpiringSoon --> ReauthRequired: 刷新失败/钱包锁定
-
-  Authorized --> ReauthRequired: issuer或caps不匹配/Root过期
-  ReauthRequired --> Unauthenticated: 清理本地登录态
-  Unauthenticated --> Authorized: 用户重新连接并授权
-```
-
-落地规则：
-
-1. 路由门禁：除登录页外，任何页面都需 `Authorized` 状态。  
-2. 状态监听：前端持续监听 `UCAN_AUTH_EVENT`、`storage`、页面可见性恢复事件。  
-3. 自动降级：过期或不一致时，立即降级到 `ReauthRequired`，不允许继续发起机器人控制操作。  
-4. 友好恢复：登录页自动带出最近账户，支持“一键重连”。  
-5. 风险控制：若签名在处理中（pending lock），UI 显示处理中状态，避免重复发起签名。  
-
 ---
 
 ## 6. 机器人统一抽象（保持独立性）
@@ -391,29 +315,6 @@ trait BotAdapter {
 - `TypeConfig`：某类机器人默认模板。
 - `InstanceConfig`：实例级配置覆盖。
 
-## 8.3 模型可变更方案（回答“默认 gpt-5.3-codex 能不能改”）
-
-可以改，而且必须设计成“可控地改”。
-
-### 优先级规则（高到低）
-
-1. `InstanceConfig.model`（实例级）
-2. `TypeConfig.default_model`（机器人类型级）
-3. `GlobalConfig.default_model`（全局级，默认 `gpt-5.3-codex`）
-
-### 变更策略
-
-1. UI 提供模型下拉（来源 Router `/models`），允许切换。  
-2. 切换时写入实例配置并触发“热更新或滚动重启”。  
-3. 失败自动回滚到上一个可用模型。  
-4. 审计日志记录“谁在何时把模型从 A 改到 B”。  
-
-### 安全约束
-
-1. 只有 `admin` 权限可改全局默认模型。  
-2. 普通用户只可改自己实例（或租户范围内）模型。  
-3. 可配置模型 allowlist，防止误选高风险/高成本模型。  
-
 ---
 
 ## 9. 一键部署体验设计（新手视角）
@@ -442,82 +343,31 @@ flowchart TD
 
 ---
 
-## 10. API 规范化设计（对齐 Interface 规范）
+## 10. API 设计草案（对前端和自动化友好）
 
-## 10.1 分类与路径（必须）
+## 10.1 鉴权与 Router
 
-每个接口只属于一种分类：
+- `POST /api/auth/wallet/connect`
+- `POST /api/auth/ucan/register`
+- `GET  /api/router/profile`
+- `POST /api/router/profile/refresh`
+- `POST /relay/router/v1/*`（内部调用）
 
-1. `public`：外部开发者、前端、移动端调用。  
-2. `admin`：运营/管理员调用。  
-3. `internal`：服务间调用、任务系统调用。  
+## 10.2 机器人编排
 
-统一路径前缀：
+- `GET  /api/bot/types`
+- `POST /api/bot/instances`
+- `POST /api/bot/instances/:id/start`
+- `POST /api/bot/instances/:id/stop`
+- `GET  /api/bot/instances/:id/status`
+- `GET  /api/bot/instances/:id/logs`
+- `POST /api/bot/instances/:id/verify`
 
-1. `/api/v1/public/*`
-2. `/api/v1/admin/*`
-3. `/api/v1/internal/*`
+## 10.3 扩展能力（预留）
 
-冲突判定按你给的规范：
-
-1. 覆盖 public 的归 public。  
-2. 同时覆盖 admin/internal 的归 admin。  
-
-## 10.2 接口定义存放（proto）
-
-按规范放到 interface 仓库：
-
-1. 公共能力接口：`yeying/api/common`（如 auth/health）  
-2. 本服务专有接口：`yeying/api/bot_control_plane`（建议新建）  
-
-建议流程：
-
-1. 先写 proto（grpc + http option）。  
-2. 再生成 Rust 代码（建议使用生成代码，不强制）。  
-3. 控制平面与前端只消费生成的契约。  
-
-## 10.3 v1 接口清单（首版草案）
-
-### public（前端/移动端）
-
-1. `POST /api/v1/public/auth/wallet:connect`  
-2. `POST /api/v1/public/auth/ucan:register`  
-3. `GET /api/v1/public/auth/me`  
-4. `GET /api/v1/public/bot/types`  
-5. `POST /api/v1/public/bot/instances`  
-6. `GET /api/v1/public/bot/instances/{id}`  
-7. `POST /api/v1/public/bot/instances/{id}:start`  
-8. `POST /api/v1/public/bot/instances/{id}:stop`  
-9. `GET /api/v1/public/bot/instances/{id}/logs`  
-10. `POST /api/v1/public/bot/instances/{id}:verify`  
-11. `GET /api/v1/public/router/models`（给模型下拉）  
-12. `PATCH /api/v1/public/bot/instances/{id}/model`（实例级模型切换）  
-
-### admin（运营/管理员）
-
-1. `GET /api/v1/admin/bot/instances`（全量检索）  
-2. `POST /api/v1/admin/bot/instances/{id}:restart`  
-3. `PATCH /api/v1/admin/router/default-model`（改全局默认模型）  
-4. `PATCH /api/v1/admin/router/model-allowlist`  
-5. `POST /api/v1/admin/providers/knowledge:test`  
-6. `POST /api/v1/admin/providers/webdav:test`  
-7. `POST /api/v1/admin/adapters/github:validate`  
-8. `POST /api/v1/admin/users/{id}:block`（预留）  
-
-### internal（服务间/任务）
-
-1. `POST /api/v1/internal/router:proxy`（Relay 内部入口）  
-2. `POST /api/v1/internal/runtime/processes:reconcile`  
-3. `POST /api/v1/internal/runtime/events:ingest`  
-4. `POST /api/v1/internal/runtime/health:probe`  
-5. `POST /api/v1/internal/audit:append`  
-
-## 10.4 向下兼容策略（v1 -> v2 规则）
-
-1. 能兼容就不改 `/api/v1/*`。  
-2. 不兼容变更才升 `/api/v2/*`。  
-3. v1 的字段新增遵循“可选新增，不删除不改语义”。  
-4. 对外发布前做 proto 兼容检查（字段号、oneof、枚举扩展）。  
+- `POST /api/providers/knowledge/test`
+- `POST /api/providers/webdav/test`
+- `POST /api/adapters/github/validate`
 
 ---
 
