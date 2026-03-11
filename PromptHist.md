@@ -374,3 +374,145 @@ ex都能按部就班部署起来
   7) 解释深度：既有“怎么做”，也有“为什么这样做”（概念/原理/架构）。
 
 29. push-firstexample-submodule
+客户问“在做？”我回“在做 我退线做完了 相关插件也装好了 打算先不用模型跑通流程 然后训练”，客户问“数据集还没开始？”
+我回“还没有，我这个星期弄出来”，因为中介跟我说“顾客着急弄论文，您看下进度哈”。我想知道剩下win机子上的任务（我的理解
+是数据集相关的处理是可以做的）有多大程度能用openclaw（注意不是一个agent，而是多个形成某种开发军团）完成，请给我方案
+过目
+$cnwin-wsl-ops 请连上探查那台机子的openclaw运行情况（注意探查的时候也不要影响正在跑的openclaw，正在跑的openclaw是通过`/home/snw
+/SnwHist/FirstExample/OpenClaw_000_need.md`还有`/home/snw/SnwHist/FirstExample/OpenClaw_002_Army.md`部署的，必须保证
+这部分openclaw安全独立运行，不受Env项目的龙虾军团影响），看能不能隔离地部署Env的openclaw开发军团，请站在教师指挥官的
+角度，统筹全局安排分析，教我理解。给我方案过目
+<skill>
+<name>cnwin-wsl-ops</name>
+<path>/home/snw/.codex-ru/skills/cnwin-wsl-ops/SKILL.md</path>
+---
+name: cnwin-wsl-ops
+description: "Connect to the Windows admin host through SSH alias `cnwin-admin-via-vps` and run commands inside its WSL distro safely. Use when tasks require remote WSL operations on that host: environment checks, OpenClaw setup/debug, router or WhatsApp verification, Windows-to-WSL proxy/DNS fixes, or repeatable command execution without quoting errors."
+---
+
+# CNWin WSL Ops
+
+Use this workflow to avoid host confusion, shell quoting failures, and unstable WSL networking.
+
+## Quick workflow
+
+1. Run health check first:
+   - `scripts/check_cnwin_wsl.sh`
+   - This validates SSH alias, hostname guard, and WSL runtime.
+2. Run non-interactive WSL commands via stdin bridge:
+   - `scripts/run_cnwin_wsl.sh "<bash commands>"`
+3. Open interactive WSL only when needed:
+   - `scripts/open_cnwin_wsl.sh`
+4. If anything fails, open `references/troubleshooting.md` and apply the matching fix.
+
+## Why these wrappers exist
+
+- `ssh ... "wsl.exe -e bash -lc '...'")` breaks easily with nested quotes.
+- The helper scripts send commands over stdin (`bash -s`), which is more reliable for automation and long command blocks.
+- `check_cnwin_wsl.sh` enforces target-host safety with an expected hostname.
+
+## Standard command patterns
+
+- Check status quickly:
+  - `scripts/run_cnwin_wsl.sh "whoami; hostname; node -v; openclaw --version"`
+- OpenClaw WhatsApp status:
+  - `scripts/run_cnwin_wsl.sh "openclaw channels status"`
+- Router quick probe:
+  - `scripts/run_cnwin_wsl.sh "curl -sS https://test-router.yeying.pub/v1/models -H 'Authorization: Bearer $ROUTER_API_KEY' | head"`
+
+## Guardrails
+
+- Confirm remote hostname before any mutation.
+- Prefer non-interactive `run_cnwin_wsl.sh` for repeatable operations.
+- Keep credentials out of command history when possible (env vars or config files with restricted permissions).
+- If user says avoid another host, treat hostname mismatch as hard stop.
+
+## Resources
+
+- `scripts/check_cnwin_wsl.sh`: Validate alias + hostname + WSL runtime.
+- `scripts/run_cnwin_wsl.sh`: Execute bash commands in remote WSL via stdin bridge.
+- `scripts/open_cnwin_wsl.sh`: Open interactive WSL shell on the remote host.
+- `references/troubleshooting.md`: Known failures and tested fixes (WSL, proxy, OpenClaw).
+
+</skill>
+请直接 $cnwin-wsl-ops 实际落地 Phase A（无扰动）注意openclaw是运行在wsl2上的，而Env目录包括数据等都在win系统下，我的期待除了Env Openclaw军团本体在wsl2上，其他所
+有都放在win系统的Env目录下，通过cmd.exe或powershell.exe运行。当然如果遇到文件编写系统乱码问题可以先在wsl2的/tmp下编
+写再cp到/mnt的win对应目录下
+继续 Phase B
+那现在状态如何？跑完了吗？如果跑完讲一下结果，如果没跑完告诉我怎么判断有没有跑完
+也就是说现在还没开始真实的任务是吗？能不能一步到位一点，把能帮我完成所有它能完成的任务的军团起起来，教我怎么看进度以及跑完的标志
+也就是说现在把你弄出来的数据集上传服务器就可以开始gan训练了？我看了一下感觉不是吧，要是不是的话我还挺生气的，当然我感觉错了最好，因为当时看```1) 数据：为什么要“栅格化+切片”
+
+pix2pix 的输入输出都是图片，所以 GIS（矢量）必须变成栅格图（比如：道路/建筑/地块边界用不同颜色编码）。
+
+切片（tile）是为了：
+
+提升训练样本量（一个地块切很多小块）
+
+控制分辨率（256/512/1024）与显存/训练时间
+
+会上你可以说：我们不是“直接生成 CAD”，而是先生成“语义平面图”，再做矢量化进入 Rhino。```还挺吓人的，没想到你这么快就做完了。为了以防万一，如果你做的不是那个数据，请详细告诉我为什么
+请落地 Phase D：直接产出可上传训练服务器的 trainA/trainB
+客户发的截图的原论文是怎么弄的？
+为什么你要说“客户提供一批真实方案图/DWG（最好多地块）；”这句话，我真的要哭了，你有好好看`/home/snw/文档/SNW_Codex/Ev/Ev_000`吗？你跟我讲讲'''结论：是否“足够完成复现”？
+
+做“技术复现跑通流程”：
+✅ OSM（Geofabrik 山东）+ EPW 基本足够（建筑轮廓/道路/地块可用、裁剪到烟台即可）。
+
+做“风环境 + 有说服力的结果”：
+⚠️ 需要更可靠的 建筑高度/体量。OSM 可能不够；RESDC 那类“带高度”数据如果能拿到会更稳。
+
+你现在在群里可以怎么落地一句话（把风险提前说清）
+
+“烟台底图数据我可以用 OSM 的山东 Geofabrik 数据直接下载裁剪，能保证链路复现跑通；但若要做风环境并保证结果可信，需要建筑高度更完整的数据（优先看你们数据集里是否已包含或能否提供带高度的建筑数据/权威来源）。”
+
+如果你把 LH 说的“数据集”目录结构/包含图层（哪怕截图）发我，我还能进一步判断：他给的数据是否已经覆盖‘烟台’、是否包含高度、是否能直接用于训练对（pix2pix 输入/标签）。
+
+客户说了，我得全包 他不参与。那我第一句话说“烟台底图数据我可以用 OSM 的山东 Geofabrik 数据直接下载裁剪，能保证链路复现跑通”，然后下班句话怎么说比较好？
+已思考 30s
+
+你这句开头很好。第二句话我建议用“全包 + 输入缺口我来补齐 + 交付物清单”把事钉死，比如：
+
+推荐版（稳、信息量够）
+
+后续像天气 EPW、OSM 里可能缺的建筑高度/风环境必要参数等我都会用公开数据/合理假设补齐，并按 OSM/ODbL 规范标注数据来源；最终交付裁剪与预处理脚本、pix2pix 权重与推理、Rhino/GH+Ladybug+Octopus 的 definition 以及 Pareto 结果，确保你们拿到即可一键复现全链路。
+
+再给你两个可选短句（看你想强势还是更简洁）：
+
+更简洁版
+
+我这边全包把缺的数据和环境都补齐，交付代码/权重/GH 文件和烟台案例的 Pareto 输出结果，确保直接复现。
+
+更强势控风险版
+
+数据、建模、仿真、优化我全程负责；若风环境需要更高精度高度数据，我会先用公开数据跑通复现，同时把可替换的数据接口留好，后续有权威高度数据可无缝替换重跑。
+
+那我直接说“烟台底图数据我可以用 OSM 的山东 Geofabrik 数据直接下载裁剪，能保证链路复现跑通。您看没问题可以下单我开始做”吧？
+已思考 9s
+
+可以这么说，逻辑是对的；我会把第二句稍微“全包化”一下，让对方更安心、也顺带把数据来源合规点一下（避免后面纠结数据从哪来）。
+
+你可以直接发这一版：
+
+烟台底图数据我可以用 OpenStreetMap 的山东 Geofabrik 数据直接下载并裁剪，保证链路复现跑通。
+其余我这边全包：包括数据预处理、GAN 训练/推理、Rhino/Grasshopper 建模、Ladybug 仿真、Octopus 多目标优化输出 Pareto 结果；数据来源会按 OSM 的 ODbL 规范做署名标注。您看没问题就下单，我这边马上开始。
+
+如果你想更短更“成交导向”，就发：
+
+烟台底图我用 OSM 的山东 Geofabrik 数据下载裁剪，能保证全流程跑通；其余环节我全包交付（代码/权重/GH 文件/结果）。您确认没问题我就开工'''这段吧，本来信心满满的项目，不知道为什么做着做着到这就卡住了
+
+继续
+请 $cnwin-wsl-ops 连上查看电商whatsapp机器人项目并对比本地和远端`git fetch --prune origin`的差距，注意先不要合并，先学习差距的内容，应该是关于钉钉机器人构建的，然后请站在教师指挥官的角度，统筹全局安排分析，教我理解。
+
+  任务主题：钉钉机器人怎么起来的？跟whatsapp电商机器人起来的方式有什么区别？二者能不能抽象共性出某种统一起机器人的流程，同时又保持各个机器人的独立性，比如同时起钉钉机器人和whatsapp机器人，两个互不影响地独立运作
+  目标产物：写到 `/home/snw/SnwHist/FirstExample/OpenClaw_003_ding.md`
+
+  请按“客户小白也能一步步复现钉钉机器人”的标准来写，要求：
+  1) 主次分明：先给战报结论，再给执行路线，再讲原理。
+  2) 全流程覆盖：从 `现有的本地仓库` 到 `同步远端并不影响正在运行的whatsapp电商机器人地起钉钉机器人`。
+  3) 内容完整：注意是根据远端新增部分学习方案和可行性分析，不要合并和实际执行
+  5) 架构可理解：用 GitHub/Typora 可渲染的 Mermaid 图。
+  6) 风格要求：生动引人入胜，极致用心打造精美作品，让人愿意津津有味读下去。
+  7) 解释深度：既有“怎么做”，也有“为什么这样做”（概念/原理/架构）。
+
+30. push-firstexample-submodule
