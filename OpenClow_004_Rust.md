@@ -22,8 +22,31 @@
 
 ### 0.3 本文边界
 
-- 这是一份“严格调研后的规划与架构文档”，不是直接改代码提交。
+- 这是一份“规划 + 分阶段实装蓝图”文档，不是只讲概念。
+- 当前已落地到 **Phase 1（控制平面 API 骨架）**，还没交付完整前端钱包登录管理台。
 - 聚焦“起机器人 + 配置 + Router 统一鉴权”这一层，机器人内部业务逻辑（电商话术、钉钉工作流）保持解耦。
+
+### 0.4 你刚才问题的直接回答（不绕弯）
+
+1. `OpenClow_004_Rust.md` 不是“只有 API 骨架”的文档。  
+2. 但目前代码落地确实只到 API 骨架阶段，这是事实。  
+3. 先做 API 骨架的原因：  
+   - 先验证 `public/admin/internal` 接口契约与模型切换策略。  
+   - 先把运行时隔离（端口/目录/实例）打稳，避免影响已运行的 WhatsApp 生产链路。  
+   - 先证明 Rust 服务、Router 联通、实例模型配置可闭环，再上钱包 UI 和编排台。  
+4. 你要的“完整可用 Web 应用”不是被否定，而是下一阶段明确执行项，下面第 18~22 节给出逐步落地方案（含命令、目录、验收）。
+
+### 0.5 什么叫“这份文档做完了”（完成定义）
+
+只有满足以下项，才算你要的“真正做完”：
+
+1. 打开 `http://127.0.0.1:3900` 能看到登录页（非 404/非纯 API JSON）。
+2. 未连接钱包时不能进入实例管理页。
+3. 连接钱包后能显示账户、复制地址、检测过期并自动要求重连。
+4. 页面上能创建多个机器人实例（WhatsApp/钉钉混合）并独立运行。
+5. 每个实例有独立 `state/config/log/workspace/port`，互不影响。
+6. 每个实例可单独设置模型（默认 `gpt-5.3-codex` 但可改）。
+7. 一条命令可拉起全套控制平面（脚本化），新手照文档可复现。
 
 ---
 
@@ -667,3 +690,351 @@ cd your-rust-control-plane
 - Adapter 负责“保留异构机器人独立性”。
 
 先把 WhatsApp + 钉钉两条线跑稳，这个平台就有了真正的产品骨架。后续 GitHub 机器人、知识库、WebDAV 接入都可以“加模块”，而不是“推倒重来”。
+
+---
+
+## 18. 当前实装状态快照（截至 2026-03-12）
+
+## 18.1 已经落地（代码层）
+
+对应实机目录：`/home/administrator/code/bot_hub`
+
+1. Rust 控制平面工程已创建：`rust/control-plane`
+2. 关键接口已可跑（`public/admin/internal` 基础端点）
+3. 模型默认值与实例级模型切换已可用（骨架级）
+4. 启动脚本已具备：
+   - `scripts/bootstrap_rust_control_plane.sh`
+   - `scripts/run_control_plane_dev.sh`
+5. `3900` 健康接口已验证可通：`/api/v1/public/health`
+
+## 18.2 还未落地（你真正关心的缺口）
+
+1. 登录页 UI 还没做出来（目前是 API 服务，不是可视化管理台）。
+2. 钱包连接与 UCAN 前端交互未接入（`window.ethereum + yeying_ucan_*`）。
+3. 实例管理页未实现（创建/编辑/启动/停止/日志流）。
+4. 多实例编排器还未把 OpenClaw 完整接起来。
+5. 端口分配、实例目录隔离、watchdog 自愈仍处于设计未全量实装。
+
+## 18.3 所以你看到 `ERR_CONNECTION_REFUSED` 的真实含义
+
+不是“方案错了”，是“服务没启动”或“访问了不存在的页面路由”：
+
+1. 未启动时：`127.0.0.1:3900` 直接拒绝连接（`REFUSED`）。
+2. 启动后访问根路径 `/`：当前可能是 `404`（因为还没前端页面）。
+3. 启动后访问 API：`/api/v1/public/health` 返回正常 JSON。
+
+---
+
+## 19. 从 API 骨架到完整 Web 应用的落地总计划（可执行）
+
+这部分是“按部就班照猫画虎可起”的执行蓝图，按阶段推进，不跳步。
+
+```mermaid
+flowchart LR
+  A[Phase A: 稳定骨架] --> B[Phase B: 钱包登录页]
+  B --> C[Phase C: 实例管理台]
+  C --> D[Phase D: 多实例编排器]
+  D --> E[Phase E: 验收与回滚]
+```
+
+## 19.1 绝对路径与目录约定（固定）
+
+远端 WSL 根路径（开发主路径）：
+
+1. `/home/administrator/code/bot_hub`（主仓）
+2. `/home/administrator/code/bot_hub/rust/control-plane`（Rust 控制平面）
+3. `/home/administrator/code/bot_hub/runtime`（运行态数据）
+4. `/home/administrator/code/bot_hub/runtime/instances/<instance_id>`（实例隔离目录）
+
+实例隔离目录统一结构：
+
+```text
+runtime/instances/<instance_id>/
+  config/
+    openclaw.json
+    env.local
+  state/
+  workspace/
+  logs/
+    gateway.log
+    orchestrator.log
+  meta/
+    ports.json
+    pid.json
+```
+
+## 19.2 一键脚本总览（最终交付必须有）
+
+必须新增并维护以下脚本（命名固定）：
+
+1. `scripts/bootstrap_full_stack.sh`
+2. `scripts/run_full_stack.sh`
+3. `scripts/stop_full_stack.sh`
+4. `scripts/status_full_stack.sh`
+5. `scripts/doctor_full_stack.sh`
+
+脚本职责：
+
+1. `bootstrap_full_stack.sh`：安装依赖、初始化 DB、生成 `.env` 模板、编译 Rust。
+2. `run_full_stack.sh`：启动控制平面 + 前端 + 编排器（后台守护）。
+3. `stop_full_stack.sh`：按 PID 清理相关服务，不影响现网已标记“外部托管”的实例。
+4. `status_full_stack.sh`：输出端口、进程、关键健康状态。
+5. `doctor_full_stack.sh`：网络、Router、钱包桥、实例目录权限综合体检。
+
+## 19.3 Phase A：稳固当前骨架（1 天）
+
+目标：把“可跑 API”变成“可重复启动、可观察、可回收”的基础盘。
+
+必做事项：
+
+1. 增加 `Makefile`/脚本入口统一命令。
+2. 把 `run_control_plane_dev.sh` 改为支持 PID 文件输出。
+3. 增加 `/api/v1/public/version` 与 `/api/v1/internal/runtime/processes:reconcile`。
+4. 增加 structured logs（实例 ID、请求 ID、route、latency）。
+
+WSL 命令：
+
+```bash
+cd /home/administrator/code/bot_hub
+bash scripts/bootstrap_rust_control_plane.sh
+bash scripts/run_control_plane_dev.sh
+curl -sS http://127.0.0.1:3900/api/v1/public/health
+```
+
+验收标准：
+
+1. 重复执行启动脚本不会残留僵尸进程。
+2. `status` 可打印控制平面 PID、监听端口、启动时长。
+
+## 19.4 Phase B：钱包登录页与门禁（2~3 天）
+
+目标：实现“未登录不能操作，登录后可见身份，过期自动回登录”。
+
+前端页面最小集合：
+
+1. `/login`：Logo + 连接钱包按钮 + 历史账户列表 + 复制地址
+2. `/dashboard`：受保护页（未授权自动跳转 `/login`）
+
+关键实现点：
+
+1. JS bridge（`window.ethereum.request`）
+2. 调用 `yeying_ucan_session`、`yeying_ucan_sign`
+3. 本地状态机（Unauthenticated/Authorized/ReauthRequired）
+4. 监听 `UCAN_AUTH_EVENT` 与 `storage` 变化
+5. 过期后自动清理并重定向登录
+
+建议目录：
+
+```text
+rust/control-plane/frontend/
+  src/
+    pages/login.rs
+    pages/dashboard.rs
+    components/account_badge.rs
+    hooks/use_auth_state.rs
+    wallet/bridge.rs
+```
+
+验收标准：
+
+1. 不连钱包访问 `/dashboard` 会被拦截。
+2. 登录后显示短地址，点击可复制全地址。
+3. 模拟过期后自动回到 `/login`。
+
+## 19.5 Phase C：实例管理台（2 天）
+
+目标：在 UI 上完成“创建实例 -> 配置 -> 启动 -> 看日志 -> 停止”。
+
+页面：
+
+1. `实例列表页`：类型、状态、端口、模型、最近心跳
+2. `实例配置页`：按类型渲染表单（WhatsApp/钉钉）
+3. `实例详情页`：日志、健康、最近错误、重启按钮
+
+API 最小闭环：
+
+1. `POST /api/v1/public/bot/instances`
+2. `POST /api/v1/public/bot/instances/{id}:start`
+3. `POST /api/v1/public/bot/instances/{id}:stop`
+4. `GET /api/v1/public/bot/instances/{id}`
+5. `GET /api/v1/public/bot/instances/{id}/logs`
+
+验收标准：
+
+1. 页面不需要命令行即可新建和启动实例。
+2. 实例错误能在页面被看见并定位。
+
+## 19.6 Phase D：多实例独立编排器（3~4 天）
+
+目标：同机并行多个 WhatsApp 电商机器人和钉钉机器人，互不影响。
+
+端口分配策略（固定规则）：
+
+1. 控制平面：`3900`
+2. Relay（可内嵌）：`3901`（如单服务内嵌可省）
+3. 实例网关池：`18800-18999`
+4. 同一实例端口冲突时自动重试下一个空闲端口
+
+实例隔离硬规则：
+
+1. 每个实例唯一 `instance_id`
+2. 每个实例唯一 `OPENCLAW_STATE_DIR`
+3. 每个实例唯一 `OPENCLAW_CONFIG_PATH`
+4. 每个实例唯一 `OPENCLAW_GATEWAY_PORT`
+5. 每个实例唯一日志目录
+
+Orchestrator 启停命令模板（WSL）：
+
+```bash
+INSTANCE_ID=wa-ecom-001
+BASE=/home/administrator/code/bot_hub/runtime/instances/$INSTANCE_ID
+mkdir -p "$BASE"/{config,state,workspace,logs,meta}
+
+export OPENCLAW_STATE_DIR="$BASE/state"
+export OPENCLAW_CONFIG_PATH="$BASE/config/openclaw.json"
+export OPENCLAW_GATEWAY_PORT="18801"
+
+nohup openclaw gateway run --allow-unconfigured \
+  >"$BASE/logs/gateway.log" 2>&1 &
+echo $! > "$BASE/meta/pid.json"
+```
+
+钉钉实例启动模板（示意）：
+
+```bash
+INSTANCE_ID=dd-rd-001
+BASE=/home/administrator/code/bot_hub/runtime/instances/$INSTANCE_ID
+mkdir -p "$BASE"/{config,state,workspace,logs,meta}
+
+cp /home/administrator/code/bot_hub/example/example_dd/config/env.example "$BASE/config/env.local"
+# 写入钉钉凭据后，交由 adapter 调用现有脚本
+bash /home/administrator/code/bot_hub/example/example_dd/scripts/run_openclaw_gateway.sh
+```
+
+验收标准：
+
+1. 同时运行 `wa-ecom-001`、`wa-ecom-002`、`dd-rd-001` 三实例互不影响。
+2. 停掉一个实例不影响另外两个实例。
+3. 任意实例可单独改模型，不影响其他实例。
+
+## 19.7 Phase E：全链路验收与演示（1~2 天）
+
+E2E 场景一（WhatsApp 电商）：
+
+1. 登录 Web 管理台
+2. 新建 `wa-ecom-001`，设置默认模型
+3. 启动实例并完成扫码绑定
+4. 在群聊发询价消息，机器人回复
+5. 修改该实例模型，验证只影响该实例
+
+E2E 场景二（钉钉）：
+
+1. 新建 `dd-rd-001`
+2. 配置钉钉凭据与策略
+3. 启动并回显健康状态
+4. 消息触发后完成预期工作流
+
+---
+
+## 20. Windows / WSL / SSH 三端命令手册（可直接复制）
+
+## 20.1 Windows PowerShell（运维视角）
+
+```powershell
+# 检查 3900 接口
+curl.exe -s http://127.0.0.1:3900/api/v1/public/health
+
+# 远程进 WSL 快速查看
+ssh cnwin-admin-via-vps "wsl.exe -e bash -lc 'ss -lntp | grep 3900 || true'"
+```
+
+## 20.2 WSL（开发视角）
+
+```bash
+cd /home/administrator/code/bot_hub
+bash scripts/bootstrap_full_stack.sh
+bash scripts/run_full_stack.sh
+bash scripts/status_full_stack.sh
+```
+
+## 20.3 本地（通过技能脚本）
+
+```bash
+/home/snw/.codex-ru/skills/cnwin-wsl-ops/scripts/check_cnwin_wsl.sh
+/home/snw/.codex-ru/skills/cnwin-wsl-ops/scripts/run_cnwin_wsl.sh \
+  "cd /home/administrator/code/bot_hub && bash scripts/status_full_stack.sh"
+```
+
+---
+
+## 21. 故障分流与排错（现象 -> 根因 -> 处理 -> 验证）
+
+```mermaid
+flowchart TD
+  A[页面打不开] --> B{3900是否监听}
+  B -- 否 --> C[控制平面未启动]
+  B -- 是 --> D{访问的是/还是/api}
+  D -- 根路径/ --> E[前端未构建或路由未挂载]
+  D -- /api --> F{返回401?}
+  F -- 是 --> G[钱包门禁生效, 需登录]
+  F -- 否 --> H{返回502?}
+  H -- 是 --> I[Router或Relay异常]
+  H -- 否 --> J[查看实例日志]
+```
+
+1. 现象：`ERR_CONNECTION_REFUSED`  
+   - 根因：控制平面没启动，或端口未监听。  
+   - 处理：`bash scripts/run_full_stack.sh`。  
+   - 验证：`curl http://127.0.0.1:3900/api/v1/public/health` 返回 `ok:true`。  
+
+2. 现象：打开 `http://127.0.0.1:3900/` 是 `404`  
+   - 根因：前端页面未挂载，仅 API 可用。  
+   - 处理：构建并启动前端路由。  
+   - 验证：`/login` 可见钱包登录页。  
+
+3. 现象：钱包已连但频繁掉线  
+   - 根因：UCAN 过期或 issuer/caps 不匹配。  
+   - 处理：清理本地授权缓存，重新连接钱包。  
+   - 验证：`/api/v1/public/auth/me` 返回当前钱包地址。  
+
+4. 现象：某个机器人启动后其他机器人异常  
+   - 根因：实例目录或端口未隔离。  
+   - 处理：检查 `runtime/instances/<id>/meta/ports.json` 与环境变量。  
+   - 验证：多实例端口唯一、日志目录唯一。  
+
+---
+
+## 22. 回滚策略（必须可执行）
+
+## 22.1 代码回滚
+
+```bash
+cd /home/administrator/code/bot_hub
+git fetch --prune origin
+git checkout main
+git reset --hard origin/main
+```
+
+## 22.2 运行态回滚（不碰现网 WhatsApp 生产实例）
+
+```bash
+cd /home/administrator/code/bot_hub
+bash scripts/stop_full_stack.sh
+# 仅清理 control-plane 侧 runtime，不动既有 openclaw-env-army 路径
+rm -rf /home/administrator/code/bot_hub/runtime/control-plane || true
+```
+
+## 22.3 数据回滚
+
+1. DB 每次 migration 前做备份快照。
+2. 配置文件按实例备份：`config/openclaw.json.bak.<time>`。
+3. 回滚后先执行 `status_full_stack.sh`，再做 E2E 冒烟。
+
+---
+
+## 23. 给你的最终承诺（对齐你的要求）
+
+1. 不再把“API 骨架”包装成“完整产品已交付”。
+2. 以本文件第 0.5 条完成定义作为唯一验收线。
+3. 后续每推进一个阶段，都回写本文件的“已完成/未完成清单”。
+4. 在你确认 Phase B-D 完成前，不新开 `OpenClaw_005_plan.md` 分散焦点。
