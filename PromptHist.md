@@ -657,3 +657,17 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 35. push-firstexample-submodule
 
 36. push-firstexample-submodule
+对嘛，肯定是全量，请将`ssh -p 26840 root@connect.westb.seetacloud.com`密码`JZYPIW/ZbiDY`跑好的24张图放到 `m`的`D:\Code\Env`你自己安排的一个目录下，然后把你从上一次写文档到现在的操作事无巨细写到`/home/snw/SnwHist/FirstExample/Env_002_24.md`,注意还是请站在教师指挥官的角度，统筹全局安排分析，教我理解。
+
+  任务主题：模型使用
+  目标产物：写到 `/home/snw/SnwHist/FirstExample/Env_002_24.md`
+
+  请按“新手小白也能一步步复现模型的使用”的标准来写，要求：
+  1) 主次分明：先给战报结论，再给执行路线，再讲原理。
+  2) 全流程覆盖：从 `案例数据` 到 `输入模型拿到结果`。
+  3) 内容完整：包括上下文、绝对路径、目录结构、脚本/命令、参数说明。从上一阶段“/home/snw/SnwHist/FirstExample/Env_001_data.md”文档写完到现在 可以把结果下载到rhino机器上的所有
+  5) 架构可理解：用 GitHub/Typora 可渲染的 Mermaid 图。
+  6) 风格要求：生动引人入胜，极致用心打造精美作品，让人愿意津津有味读下去。
+  7) 解释深度：既有“怎么做”，也有“为什么这样做”（概念/原理/架构）。
+
+37. push-firstexample-submodule
