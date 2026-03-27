@@ -680,3 +680,4 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 41. 帮我快进同步远端再把本地最新推到远端
 42. 现在有新更新了，帮我推
 43. push-firstexample-submodule
+44. 帮我把本仓库跟git@github.com:ShengNW/SnwHist_FirstExample.git最新代码同步，注意ssh已经配好，并推本仓库的新部分

@@ -91,6 +91,7 @@ powershell -ExecutionPolicy Bypass -File .\Measure-DeLineBandwidth.ps1 -Action s
 1. `This action requires an elevated PowerShell window`  
 重新用管理员 PowerShell 执行。
 2. `Command not found: tshark`  
-安装 Wireshark 并勾选 `tshark`，或把 `tshark.exe` 加入 PATH。
+安装 Wireshark 并勾选 `tshark`，或把 `tshark.exe` 加入 PATH。  
+推荐命令：`winget install -e --id WiresharkFoundation.Wireshark`
 3. `No packets matched filter`  
 说明采集期间没有命中 `:32699` 流量，检查是否确实访问了目标站、或端口是否改变。
