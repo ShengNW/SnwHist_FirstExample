@@ -686,3 +686,80 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 46. push-firstexample-submodule
 
 47. push-firstexample-submodule
+
+48. 我没看懂也没理解，提复现提这么多遍了，到现在还没复现出来，怎么用的还是“当前阶段用于快筛的 `tail10` 与论文最终表格的完整评估口径并不完全等价。”原论文、源码是没有吗？你是不知道怎么写代码吗？到底为什么？我很生气也很挫败啊，你到底在干嘛？既然不完全等价你为什么要跑？烧我钱吗？你不完全等价就算跑出论文结果又有什么意义？更何况现在还没跑出来，你到底在想什么？迄今为止为了复现到底做了什么？到底为什么这么多遍到现在还是各种卡？请事无巨细再做一个新md讲清楚
+
+49. Another language model started to solve this problem and produced a summary of its thinking process. You also have access to the state of the tools that were used by that language model. Use this to build on the work that has already been done and avoid duplicating work. Here is the summary produced by the other language model, use the information in this summary to assist with your own analysis:
+**Handoff Summary**
+
+### 1) Current Progress
+- We are in `/home/snw/SnwHist/FirstExample` (a submodule under `/home/snw/SnwHist`).
+- User repeatedly uses command-like prompt `push-firstexample-submodule`; workflow implemented via local skill script:
+  - Script: `.agents/skills/push-firstexample-submodule/scripts/push_firstexample_and_parent.sh`
+  - Behavior: commit/push `FirstExample` repo, then commit/push only `FirstExample` submodule pointer in parent `SnwHist`.
+- A large number of push cycles have already been executed successfully (with occasional remote divergence handled via fetch/rebase/continue).
+- For each turn, prompt must be logged in `FirstExample/PromptHist.md` (root AGENTS rule).  
+- Most recent completed push before current interruption:
+  - Submodule commit: `564535e...` then later `d39574b...`, then `29dc3d5...` etc. (latest confirmed before this interrupted turn was `29dc3d5` and then later attempts in progress; verify current HEAD before acting).
+  - Parent pointer commits were pushed correspondingly.
+- The current turn started with:
+  - Untracked files:
+    - `Wm_006_表5对齐与当前差距说明_20260329.md`
+    - `Wm_007_论文对齐复现进展与差距闭环_20260331.md`
+    - `Wm_008_论文复现对齐与创新攻坚决策报告_20260331.md`
+  - User then sent an emotional complaint (not yet processed because context-switch happened): asks why still not reproduced, criticizes `tail10` non-equivalence, asks for a **new md** with full detailed explanation.
+
+### 2) Key Decisions / Operational Pattern
+- Always obey AGENTS in this repo:
+  - Record every root-level user prompt in `PromptHist.md` (user prompt only).
+- When user says `push-firstexample-submodule`, execute skill flow directly (no extra discussion).
+- If push rejected due to non-fast-forward:
+  - `git fetch`
+  - `git rebase origin/main`
+  - resolve `PromptHist.md` conflicts carefully (keep both remote user prompts and current one, increment numbering correctly)
+  - continue rebase and push.
+- Parent repo may also reject push; similarly fetch/rebase/push while preserving existing unrelated local changes (`PromptHist.md` in parent and `docs_OC` should remain untouched unless explicitly asked).
+
+### 3) Important Context / User Preferences
+- User is highly sensitive to “burning compute money” and non-equivalent metrics.
+- They are frustrated about repeated “复现未完成”; wants blunt, complete, accountable explanation.
+- They specifically object to using quick metric (`tail10`) as substitute for paper final metric.
+- Wants **new markdown** “事无巨细讲清楚”:
+  - why not reproduced yet
+  - what exactly has been done so far
+  - why blocked repeatedly
+  - what was wrong in approach/decisions
+  - what should be done next to avoid waste
+- Tone expectation: direct, concrete, no vague excuses.
+
+### 4) What Remains To Be Done (Next Steps)
+1. **Handle latest user complaint prompt**:
+   - Append this exact complaint prompt to `FirstExample/PromptHist.md` with next numeric ID (check latest max first).
+2. **Create a new md file** (name not specified; choose consistent naming, e.g. `Wm_009_复现受阻复盘与纠偏方案_YYYYMMDD.md`) containing:
+   - Executive summary (clear yes/no on “是否完成复现”: likely no)
+   - Full timeline of work done (by phase/doc/script/log)
+   - Root causes of non-reproduction (metric mismatch, protocol mismatch, budget/checkpoint/data-split drift, etc.)
+   - Why `tail10` was used and why that was insufficient / mistake boundary
+   - Cost-control and stop-loss policy
+   - “equivalence-first” gate checklist before any further expensive run
+   - strict next-run plan with acceptance criteria tied to paper metric definitions.
+3. If user then requests push, run `push-firstexample-submodule` workflow.
+
+### 5) Critical References to Use
+- Repo docs with existing narrative:
+  - `Wm_006_表5对齐与当前差距说明_20260329.md`
+  - `Wm_007_论文对齐复现进展与差距闭环_20260331.md`
+  - `Wm_008_论文复现对齐与创新攻坚决策报告_20260331.md`
+  - Earlier context docs: `Wm_003`, `Wm_005`, etc.
+- Current AGENTS rules in this repo:
+  - `/home/snw/SnwHist/FirstExample/AGENTS.md`
+- Prompt history file that must be updated:
+  - `/home/snw/SnwHist/FirstExample/PromptHist.md`
+
+### 6) Caution
+- A previous mistake occurred when appending prompt with literal `${next_num}` (shell heredoc quoting issue).  
+  Use safe numeric expansion and verify the final line.
+- Keep numbering in `PromptHist.md` monotonic; remote may already consume expected numbers (40–45 happened in concurrent updates). Verify before writing.
+- Do not touch unrelated parent-repo local changes (`/home/snw/SnwHist/PromptHist.md`, `docs_OC`) unless asked.
+
+50. push-firstexample-submodule(另外009gitignore掉，那个错让你写了)
