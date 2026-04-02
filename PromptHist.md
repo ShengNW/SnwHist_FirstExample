@@ -765,3 +765,4 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 50. push-firstexample-submodule(另外009gitignore掉，那个错让你写了)
 
 51. wm010是要推的
+52. 帮我先同步后推送
