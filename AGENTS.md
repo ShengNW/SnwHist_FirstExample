@@ -12,6 +12,7 @@
 - `index.md`：子目录（子模块）索引与元信息。
 - `443-sslh-nginx-router.md`：443 复用与 Nginx/Router 共存的复现手册与原理讲解。
 - `win_004_cmd_ps_reproduce_prompt_templates.md`：Windows 场景下（cmd/powershell）“新手可复现 + 写入 win 新 md + SSH 推送”的 prompt 模板沉淀。
+- `【win】ahk自动化wsl_从单目录安装到稳定双击执行.md`：AHK 自动化 WSL 的完整复盘手册（安装、脚本、参数、日志、故障回滚与架构原理）。
 
 本地 Skills（仅在本目录会话可用）：
 - `.agents/skills/push-firstexample-submodule/SKILL.md`：FirstExample 推送流程技能（先推本仓库，再更新父仓库子模块指针）。

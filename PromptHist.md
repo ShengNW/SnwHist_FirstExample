@@ -775,3 +775,15 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 56. push-firstexample-submodule
 
 57. # reproduce 帮我用cmd.exe/powershell.exe访问“S:\阿里云盘\SurfaceBook2\S\Data\temp\RbSv”这个目录，搜寻并提炼其中跟新手小白可复现、写入“git@github.com:ShengNW/SnwHist_FirstExample.git”win开头新md并ssh推相关的prompt模板
+58. 现在成功了，请做'''任务主题：【ahk自动化wsl】
+
+目标仓库：git@github.com:ShengNW/SnwHist_FirstExample.git
+目标产物：写入一个以 `【win】` 开头的新 md
+写作要求（必须全部满足）：
+1) 主次分明：先给战报结论，再给执行路线，再讲原理。
+2) 全流程覆盖：从 `【ahk单目录安装】` 到 `【现在能稳定双击执行wsl命令】`。
+3) 内容完整：上下文、绝对路径、目录结构、脚本/命令、参数说明、失败回滚点。
+4) 新手友好：每一步可直接复制执行，并注明预期输出与常见报错。
+5) 架构可理解：用 GitHub/Typora 可渲染的 Mermaid 图。
+  6) 风格要求：生动引人入胜，极致用心打造精美作品，让人愿意津津有味读下去。
+  7) 解释深度：既有“怎么做”，也有“为什么这样做”（概念/原理/架构）。'''
