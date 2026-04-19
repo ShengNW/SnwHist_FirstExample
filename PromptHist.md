@@ -773,3 +773,5 @@ https://wiki.yeying.pub/link/266#bkmrk-%E5%85%BC%E5%AE%B9%E6%80%A7%EF%BC%8C%E5%B
 55. 帮我同步远端，把最新拉下来
 
 56. push-firstexample-submodule
+
+57. # reproduce 帮我用cmd.exe/powershell.exe访问“S:\阿里云盘\SurfaceBook2\S\Data\temp\RbSv”这个目录，搜寻并提炼其中跟新手小白可复现、写入“git@github.com:ShengNW/SnwHist_FirstExample.git”win开头新md并ssh推相关的prompt模板

@@ -11,6 +11,7 @@
 - `Interface.md`：所有读取/写入智能体必须遵守的接口规则。
 - `index.md`：子目录（子模块）索引与元信息。
 - `443-sslh-nginx-router.md`：443 复用与 Nginx/Router 共存的复现手册与原理讲解。
+- `win_004_cmd_ps_reproduce_prompt_templates.md`：Windows 场景下（cmd/powershell）“新手可复现 + 写入 win 新 md + SSH 推送”的 prompt 模板沉淀。
 
 本地 Skills（仅在本目录会话可用）：
 - `.agents/skills/push-firstexample-submodule/SKILL.md`：FirstExample 推送流程技能（先推本仓库，再更新父仓库子模块指针）。
